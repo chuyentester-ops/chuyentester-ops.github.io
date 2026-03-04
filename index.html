@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Chuyen Le – Senior QA Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --navy: #0a1628;
+    --navy2: #112240;
+    --blue: #1d4ed8;
+    --cyan: #06b6d4;
+    --cyan2: #cffafe;
+    --slate: #8892b0;
+    --light: #ccd6f6;
+    --white: #e6f1ff;
+    --green: #64ffda;
+    --card: #112240cc;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--light);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* NOISE TEXTURE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* GRID LINES */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(29,78,216,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(29,78,216,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 60px;
+    background: rgba(10,22,40,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(29,78,216,0.15);
+  }
+
+  .nav-logo {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    color: var(--cyan);
+    letter-spacing: 0.1em;
+  }
+
+  .nav-links { display: flex; gap: 36px; }
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--slate);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-links a::before {
+    content: attr(data-num);
+    color: var(--cyan);
+    margin-right: 6px;
+    font-size: 11px;
+  }
+  .nav-links a:hover { color: var(--white); }
+
+  /* SECTIONS */
+  section { position: relative; z-index: 1; }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 120px 60px 80px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .hero-inner { max-width: 700px; }
+
+  .hero-greeting {
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    color: var(--cyan);
+    letter-spacing: 0.1em;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.2s forwards;
+  }
+
+  .hero-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(48px, 8vw, 80px);
+    color: var(--white);
+    line-height: 1.05;
+    margin-bottom: 12px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.4s forwards;
+  }
+
+  .hero-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(28px, 4vw, 48px);
+    color: var(--slate);
+    line-height: 1.1;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.6s forwards;
+  }
+
+  .hero-desc {
+    font-size: 17px;
+    color: var(--slate);
+    line-height: 1.8;
+    max-width: 560px;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.8s forwards;
+  }
+
+  .hero-desc strong { color: var(--cyan); font-weight: 500; }
+
+  .hero-cta {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 1s forwards;
+  }
+
+  .btn-primary {
+    padding: 14px 32px;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    background: transparent;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    transition: all 0.25s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(6,182,212,0.1);
+    transform: translateX(-100%);
+    transition: transform 0.25s;
+  }
+  .btn-primary:hover::before { transform: translateX(0); }
+  .btn-primary:hover { color: var(--white); }
+
+  .btn-secondary {
+    padding: 14px 32px;
+    color: var(--slate);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .btn-secondary:hover { color: var(--cyan); }
+
+  /* HERO STATS */
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+    margin-top: 72px;
+    padding-top: 40px;
+    border-top: 1px solid rgba(29,78,216,0.2);
+    opacity: 0;
+    animation: fadeUp 0.6s ease 1.2s forwards;
+  }
+  .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 42px;
+    color: var(--cyan);
+    line-height: 1;
+  }
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--slate);
+    letter-spacing: 0.1em;
+    margin-top: 6px;
+    text-transform: uppercase;
+  }
+
+  /* SCROLLING LINE */
+  .scroll-line {
+    position: fixed;
+    right: 40px;
+    bottom: 0;
+    width: 1px;
+    height: 120px;
+    background: linear-gradient(to bottom, var(--cyan), transparent);
+    z-index: 10;
+    opacity: 0;
+    animation: fadeIn 1s ease 2s forwards;
+  }
+
+  /* CONTENT SECTIONS */
+  .content-section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 100px 60px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 64px;
+  }
+
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--cyan);
+  }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    color: var(--white);
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: rgba(29,78,216,0.3);
+    max-width: 300px;
+  }
+
+  /* ABOUT */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+
+  .about-text p {
+    color: var(--slate);
+    line-height: 1.85;
+    margin-bottom: 20px;
+    font-size: 16px;
+  }
+  .about-text p strong { color: var(--light); font-weight: 500; }
+
+  .about-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .info-row {
+    display: flex;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(29,78,216,0.15);
+    font-size: 14px;
+  }
+  .info-label {
+    font-family: 'DM Mono', monospace;
+    color: var(--cyan);
+    min-width: 120px;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    padding-top: 2px;
+  }
+  .info-value { color: var(--light); }
+
+  /* SKILLS */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+
+  .skill-group {
+    background: var(--card);
+    border: 1px solid rgba(29,78,216,0.2);
+    padding: 32px;
+    backdrop-filter: blur(8px);
+    transition: border-color 0.3s;
+  }
+  .skill-group:hover { border-color: rgba(6,182,212,0.4); }
+
+  .skill-group-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--cyan);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(6,182,212,0.2);
+  }
+
+  .skill-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .skill-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--light);
+    min-width: 150px;
+  }
+
+  .skill-bar-wrap {
+    flex: 1;
+    height: 3px;
+    background: rgba(29,78,216,0.2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .skill-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue), var(--cyan));
+    width: 0;
+    transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .skill-pct {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--slate);
+    min-width: 36px;
+    text-align: right;
+  }
+
+  /* EXPERIENCE */
+  .exp-list { display: flex; flex-direction: column; gap: 0; }
+
+  .exp-item {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 40px;
+    padding: 40px 0;
+    border-bottom: 1px solid rgba(29,78,216,0.15);
+    position: relative;
+  }
+
+  .exp-item::before {
+    content: '';
+    position: absolute;
+    left: 196px;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: rgba(29,78,216,0.2);
+  }
+
+  .exp-item::after {
+    content: '';
+    position: absolute;
+    left: 191px;
+    top: 44px;
+    width: 10px; height: 10px;
+    border: 2px solid var(--cyan);
+    background: var(--navy);
+    border-radius: 50%;
+  }
+
+  .exp-meta { padding-right: 20px; }
+
+  .exp-period {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--cyan);
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  .exp-location {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--slate);
+    line-height: 1.5;
+  }
+
+  .exp-company {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .exp-role {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--cyan);
+    letter-spacing: 0.08em;
+    margin-bottom: 20px;
+  }
+
+  .exp-tag {
+    display: inline-block;
+    background: rgba(6,182,212,0.08);
+    border: 1px solid rgba(6,182,212,0.2);
+    color: var(--cyan);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 10px;
+    letter-spacing: 0.08em;
+    margin-bottom: 16px;
+  }
+
+  .exp-bullets { list-style: none; }
+  .exp-bullets li {
+    font-size: 14px;
+    color: var(--slate);
+    padding: 6px 0 6px 20px;
+    position: relative;
+    line-height: 1.65;
+  }
+  .exp-bullets li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--cyan);
+    font-size: 10px;
+    top: 9px;
+  }
+
+  /* PROJECTS */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .project-card {
+    background: var(--card);
+    border: 1px solid rgba(29,78,216,0.2);
+    padding: 32px;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--blue), var(--cyan));
+    transform: scaleX(0);
+    transition: transform 0.3s;
+    transform-origin: left;
+  }
+
+  .project-card:hover { border-color: rgba(6,182,212,0.4); transform: translateY(-4px); }
+  .project-card:hover::before { transform: scaleX(1); }
+
+  .project-icon {
+    font-size: 28px;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .project-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: var(--white);
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .project-company {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--cyan);
+    letter-spacing: 0.08em;
+    margin-bottom: 16px;
+  }
+
+  .project-desc {
+    font-size: 13px;
+    color: var(--slate);
+    line-height: 1.7;
+  }
+
+  /* CONTACT */
+  #contact {
+    background: var(--navy2);
+    border-top: 1px solid rgba(29,78,216,0.2);
+  }
+
+  .contact-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 100px 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .contact-text h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 42px;
+    color: var(--white);
+    margin-bottom: 20px;
+    line-height: 1.15;
+  }
+
+  .contact-text p {
+    color: var(--slate);
+    line-height: 1.8;
+    margin-bottom: 32px;
+  }
+
+  .contact-links { display: flex; flex-direction: column; gap: 16px; }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 24px;
+    border: 1px solid rgba(29,78,216,0.2);
+    background: rgba(17,34,64,0.5);
+    text-decoration: none;
+    transition: all 0.25s;
+  }
+  .contact-link:hover { border-color: var(--cyan); background: rgba(6,182,212,0.05); }
+
+  .contact-link-icon {
+    font-size: 20px;
+    width: 32px;
+    text-align: center;
+  }
+
+  .contact-link-info { flex: 1; }
+  .contact-link-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--slate);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .contact-link-value {
+    font-size: 14px;
+    color: var(--light);
+    margin-top: 2px;
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 32px;
+    border-top: 1px solid rgba(29,78,216,0.15);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--slate);
+    position: relative;
+    z-index: 1;
+  }
+
+  footer span { color: var(--cyan); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    #hero, .content-section { padding: 100px 24px 60px; }
+    .about-grid, .skills-grid, .projects-grid, .contact-inner { grid-template-columns: 1fr; gap: 32px; }
+    .exp-item { grid-template-columns: 1fr; gap: 8px; }
+    .exp-item::before, .exp-item::after { display: none; }
+    .hero-stats { gap: 24px; }
+    .scroll-line { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">CL // QA</div>
+  <div class="nav-links">
+    <a href="#about" data-num="01">About</a>
+    <a href="#skills" data-num="02">Skills</a>
+    <a href="#experience" data-num="03">Experience</a>
+    <a href="#projects" data-num="04">Projects</a>
+    <a href="#contact" data-num="05">Contact</a>
+  </div>
+</nav>
+
+<div class="scroll-line"></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <p class="hero-greeting">// Hello, I'm</p>
+    <h1 class="hero-name">Chuyen Le</h1>
+    <h2 class="hero-title">Senior QA Engineer &<br/>Data Testing Specialist</h2>
+    <p class="hero-desc">
+      I ensure software quality through <strong>meticulous testing</strong> and <strong>data validation</strong>. 
+      Specializing in SQL-driven data QA, Playwright/Cypress automation, and CRO testing — 
+      working remotely with US and Canadian product teams for 14+ years.
+    </p>
+    <div class="hero-cta">
+      <a href="#experience" class="btn-primary">View Experience</a>
+      <a href="#contact" class="btn-secondary">Get in touch →</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num">14+</div>
+        <div class="stat-label">Years Experience</div>
+      </div>
+      <div>
+        <div class="stat-num">4</div>
+        <div class="stat-label">US/CA Companies</div>
+      </div>
+      <div>
+        <div class="stat-num">SQL</div>
+        <div class="stat-label">Core Strength</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="content-section">
+    <div class="section-header reveal">
+      <span class="section-num">01</span>
+      <h2 class="section-title">About</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>
+          I'm a Senior QA Engineer based in <strong>Nha Trang, Vietnam</strong> with over 14 years of experience 
+          in software testing across Manual Testing, Automation Testing, and Data Quality Assurance.
+        </p>
+        <p>
+          My core strength is <strong>SQL</strong> — I use it daily to query databases, validate data pipelines, 
+          build QA reports, and ensure data accuracy across marketing and analytics platforms. 
+          I also work extensively with <strong>BigQuery</strong> for large-scale data validation.
+        </p>
+        <p>
+          On the automation side, I build robust test frameworks with <strong>Playwright</strong> and <strong>Cypress</strong>. 
+          I've spent the bulk of my career collaborating remotely with US and Canadian product teams, 
+          navigating cross-timezone workflows with ease.
+        </p>
+        <p>
+          Domain experience spans <strong>CRO testing</strong>, automotive dealership platforms, 
+          MarTech data layers, and SaaS web products.
+        </p>
+      </div>
+      <div class="about-info reveal">
+        <div class="info-row">
+          <span class="info-label">LOCATION</span>
+          <span class="info-value">Nha Trang, Vietnam</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">EMAIL</span>
+          <span class="info-value">chuyentester@gmail.com</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">PHONE</span>
+          <span class="info-value">+84 988 208 927</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">EDUCATION</span>
+          <span class="info-value">B.Sc. Information Technology<br/>Nha Trang University, 2012</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">WORK TYPE</span>
+          <span class="info-value">Remote / On-site</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">DOMAINS</span>
+          <span class="info-value">CRO · MarTech · Automotive · SaaS</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="content-section">
+    <div class="section-header reveal">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Skills</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-group reveal">
+        <div class="skill-group-title">Data Testing & SQL</div>
+        <div class="skill-item"><span class="skill-name">SQL (Advanced)</span><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="96"></div></div><span class="skill-pct">96%</span></div>
+        <div class="skill-item"><span class="skill-name">BigQuery (GCP)</span><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="93"></div></div><span class="skill-pct">93%</span></div>
+        <div class="skill-item"><span class="skill-name">Data Validation</span><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="95"></div></div><span class="skill-pct">95%</span></div>
+        <div class="skill-item"><span class="skill-name">ETL Testing</span><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="90"></div></div><span class="skill-pct">90%</span></div>
+        <div class="skill-item"><span class="skill-name">Data Reporting</span><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="92"></div></div><span class="skill-pct">92%</span></div>
+        <div class="skill-item"><span class="skill-name">PostgreSQL / MySQL</span><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="88"></div></div><span class="skill-pct">88%</span></div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">Automation Testing</div>
+        <div class="skill-item"><span class="skill-name">Playwright</span><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="93"></div></div><span class="skill-pct">93%</span></div>
+        <div class="skill-item"><span class="skill-name">Cypress</span><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="90"></div></div><span class="skill-pct">90%</span></div>
+        <div class="skill-item"><span class="skill-name">API Testing (Postman)</span><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="92"></div></div><span class="skill-pct">92%</span></div>
+        <div class="skill-item"><span class="skill-name">Performance (JMeter)</span><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="80"></div></div><span class="skill-pct">80%</span></div>
+        <div class="skill-item"><span class="skill-name">Git / GitHub / Bitbucket</span><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="93"></div></div><span class="skill-pct">93%</span></div>
+        <div class="skill-item"><span class="skill-name">JIRA / TestRail</span><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="95"></div></div><span class="skill-pct">95%</span></div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">Manual Testing</div>
+        <div class="skill-item"><span class="skill-name">Test Planning</span><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="98"></div></div><span class="skill-pct">98%</span></div>
+        <div class="skill-item"><span class="skill-name">Test Case Design</span><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="97"></div></div><span class="skill-pct">97%</span></div>
+        <div class="skill-item"><span class="skill-name">CRO Testing</span><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="90"></div></div><span class="skill-pct">90%</span></div>
+        <div class="skill-item"><span class="skill-name">Exploratory Testing</span><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="92"></div></div><span class="skill-pct">92%</span></div>
+        <div class="skill-item"><span class="skill-name">Mobile Testing</span><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="85"></div></div><span class="skill-pct">85%</span></div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">Methodologies & Tools</div>
+        <div class="skill-item"><span class="skill-name">Agile / Scrum</span><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="95"></div></div><span class="skill-pct">95%</span></div>
+        <div class="skill-item"><span class="skill-name">Risk-Based Testing</span><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="90"></div></div><span class="skill-pct">90%</span></div>
+        <div class="skill-item"><span class="skill-name">Jenkins / GitLab CI</span><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="80"></div></div><span class="skill-pct">80%</span></div>
+        <div class="skill-item"><span class="skill-name">Remote Collaboration</span><div class="skill-bar-wrap"><div class="skill-bar-fill" data-w="97"></div></div><span class="skill-pct">97%</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="content-section">
+    <div class="section-header reveal">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Experience</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="exp-list">
+
+      <div class="exp-item reveal">
+        <div class="exp-meta">
+          <div class="exp-period">2023 – PRESENT</div>
+          <div class="exp-location">Nha Trang, Vietnam<br/>US-based</div>
+        </div>
+        <div class="exp-content">
+          <div class="exp-company">Fusion92</div>
+          <div class="exp-role">QA ENGINEER — CRO SPECIALIST</div>
+          <span class="exp-tag">Manual Testing · CRO</span>
+          <ul class="exp-bullets">
+            <li>Manual QA on Conversion Rate Optimization tasks for US digital marketing campaigns and landing pages</li>
+            <li>Validate A/B test implementations across browsers and devices before experiments go live</li>
+            <li>Manually test landing pages, CTAs, forms, and user flows against CRO hypotheses</li>
+            <li>Verify conversion tracking accuracy to Google Analytics and Google Ads</li>
+            <li>Identify UX inconsistencies and tracking discrepancies affecting conversion rates</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="exp-item reveal">
+        <div class="exp-meta">
+          <div class="exp-period">2019–2021<br/>2023–PRESENT</div>
+          <div class="exp-location">Nha Trang, Vietnam<br/>US-based</div>
+        </div>
+        <div class="exp-content">
+          <div class="exp-company">Screen1 Technology</div>
+          <div class="exp-role">QA ENGINEER</div>
+          <span class="exp-tag">ListenLayer · MarTech · Data QA</span>
+          <ul class="exp-bullets">
+            <li>Tested ListenLayer — a cloud-based data layer platform for automated website measurement and conversion tracking</li>
+            <li>Validated data collection and distribution pipelines from website interactions to Google Analytics, Google Ads, and Facebook</li>
+            <li>Wrote SQL queries to verify data integrity between ListenLayer's data layer and downstream marketing platforms</li>
+            <li>Tested no-code tracking configuration UI, automation rules engine, and real-time data preview</li>
+            <li>Validated data outputs across browsers and devices for consistent measurement</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="exp-item reveal">
+        <div class="exp-meta">
+          <div class="exp-period">2015 – 2022</div>
+          <div class="exp-location">Remote<br/>Canada-based</div>
+        </div>
+        <div class="exp-content">
+          <div class="exp-company">AutoTextDriver</div>
+          <div class="exp-role">SENIOR QA ENGINEER / TEST LEAD</div>
+          <span class="exp-tag">Automation · SQL · Remote · 7 Years</span>
+          <ul class="exp-bullets">
+            <li>Tested a digital communication platform for automotive dealerships — SMS, email & social lead engagement</li>
+            <li>Built Playwright and Cypress automation frameworks covering messaging flows, CRM integrations, and dashboards</li>
+            <li>Wrote complex SQL queries to validate lead data, message delivery records, and campaign metrics</li>
+            <li>Managed source code with Git, GitHub, and Bitbucket; collaborated with Canada-based teams across time zones</li>
+            <li>Reduced regression cycle from 5 days to under 1 day; defect escape rate below 2%</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="exp-item reveal">
+        <div class="exp-meta">
+          <div class="exp-period">2012 – 2014</div>
+          <div class="exp-location">Nha Trang, Vietnam<br/>US-based</div>
+        </div>
+        <div class="exp-content">
+          <div class="exp-company">CO2 <span style="font-size:14px;color:var(--slate)">(now Gravity)</span></div>
+          <div class="exp-role">JUNIOR QA TESTER</div>
+          <span class="exp-tag">Manual Testing · Web</span>
+          <ul class="exp-bullets">
+            <li>Manual testing for web applications for the US market in a fast-paced startup environment</li>
+            <li>Executed smoke, functional, and regression testing; reported and tracked defects through to resolution</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="content-section">
+    <div class="section-header reveal">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Key Projects</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="projects-grid">
+      <div class="project-card reveal">
+        <span class="project-icon">🗄️</span>
+        <div class="project-name">ListenLayer Data Layer Validation</div>
+        <div class="project-company">Screen1 Technology · MarTech</div>
+        <p class="project-desc">Built SQL test scripts to verify end-to-end data flows from website events through the data layer to Google Analytics, Google Ads, and Facebook. Covered cross-browser and device scenarios for consistent tracking.</p>
+      </div>
+      <div class="project-card reveal">
+        <span class="project-icon">🚗</span>
+        <div class="project-name">AutoTextDriver Automation Framework</div>
+        <div class="project-company">AutoTextDriver · Automotive CRM</div>
+        <p class="project-desc">Built Playwright & Cypress automation suite for SMS/email campaign flows, CRM integrations, and dealership dashboards. Integrated with Bitbucket CI/CD — cut regression time by 70%.</p>
+      </div>
+      <div class="project-card reveal">
+        <span class="project-icon">📊</span>
+        <div class="project-name">CRO Test Coverage — Fusion92</div>
+        <div class="project-company">Fusion92 · Digital Marketing</div>
+        <p class="project-desc">Manual QA on A/B experiments, landing pages, and conversion funnels for US marketing campaigns. Verified tracking accuracy to Google Analytics and Google Ads before every experiment launch.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-inner">
+    <div class="contact-text reveal">
+      <h2>Let's work<br/><em>together.</em></h2>
+      <p>Open to remote QA opportunities with US, Canadian, or international teams. Whether it's data quality, automation, or CRO testing — I'd love to connect.</p>
+      <a href="mailto:chuyentester@gmail.com" class="btn-primary">Say Hello</a>
+    </div>
+    <div class="contact-links reveal">
+      <a href="mailto:chuyentester@gmail.com" class="contact-link">
+        <span class="contact-link-icon">✉️</span>
+        <div class="contact-link-info">
+          <div class="contact-link-label">Email</div>
+          <div class="contact-link-value">chuyentester@gmail.com</div>
+        </div>
+      </a>
+      <a href="tel:+84988208927" class="contact-link">
+        <span class="contact-link-icon">📞</span>
+        <div class="contact-link-info">
+          <div class="contact-link-label">Phone</div>
+          <div class="contact-link-value">+84 988 208 927</div>
+        </div>
+      </a>
+      <a href="https://linkedin.com/in/chuyen-le" class="contact-link" target="_blank">
+        <span class="contact-link-icon">💼</span>
+        <div class="contact-link-info">
+          <div class="contact-link-label">LinkedIn</div>
+          <div class="contact-link-value">linkedin.com/in/chuyen-le</div>
+        </div>
+      </a>
+      <a href="https://github.com/chuyen-le" class="contact-link" target="_blank">
+        <span class="contact-link-icon">🐙</span>
+        <div class="contact-link-info">
+          <div class="contact-link-label">GitHub</div>
+          <div class="contact-link-value">github.com/chuyen-le</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Designed & built by <span>Chuyen Le</span> · Nha Trang, Vietnam · 2025</p>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+  reveals.forEach(el => observer.observe(el));
+
+  // Skill bars animation
+  const barObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.querySelectorAll('.skill-bar-fill').forEach((bar, i) => {
+          setTimeout(() => {
+            bar.style.width = bar.dataset.w + '%';
+          }, i * 100);
+        });
+        barObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('.skill-group').forEach(g => barObserver.observe(g));
+
+  // Active nav link
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 200) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--cyan)' : '';
+    });
+  });
+</script>
+</body>
+</html>
